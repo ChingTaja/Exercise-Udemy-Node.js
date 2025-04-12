@@ -1,5 +1,4 @@
 // Promise API
-
 const fsPromise = require('fs/promises');
 
 (async () => {
@@ -10,7 +9,6 @@ const fsPromise = require('fs/promises');
     }
 })()
 
-
 // Callback API
 const fs = require('fs')
 
@@ -18,5 +16,5 @@ fs.copyFile('example.txt', 'copied_example_cb.txt', (err) => { // cb first param
     console.log(err)
 })
 
-// Syc API
+// Sync API
 fs.copyFileSync('example.txt', 'copied_exaple_sync.txt')
