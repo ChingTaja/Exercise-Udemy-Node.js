@@ -1,4 +1,4 @@
-const { watch, open, read } = require('node:fs/promises');
+const { watch, open } = require('node:fs/promises');
 const { Buffer } = require('buffer');
 
 // 1. open (32)  將 file desciptor 讀進 memory
@@ -6,8 +6,25 @@ const { Buffer } = require('buffer');
 // 3. close (release memory)
 
 (async () => {
-    let commandFileHandle = await open('./command.txt', 'r') // read
+    // create file (write)
+    const createFile = async (filePath) => {
 
+        try {
+            // check if file existed
+            let existingFileHandler = await open(filePath, 'r')// An exception occurs if the file does not exist.
+            existingFileHandler.close()
+
+            return `the file ${filePath} alrady exists`
+        } catch (e) {
+            // promise 版本回傳　file handle
+            let newFileHandler = await open(filePath, 'w') // create
+            newFileHandler.write('hello word') //write
+
+            newFileHandler.close()
+        }
+    }
+
+    let commandFileHandle = await open('./command.txt', 'r')
     commandFileHandle.on('change', async () => {
         // get file size
         const size = (await commandFileHandle.stat()).size
@@ -20,6 +37,13 @@ const { Buffer } = require('buffer');
         let position = 0
         const content = await commandFileHandle.read(buffer, offset, length, position)
         console.log(content)
+
+        const command = buffer.toString('utf-8')
+        const CREATE_FILE = 'create a file'
+        if (command.includes(CREATE_FILE)) {
+            const filePath = command.substring(CREATE_FILE.length + 1)
+            createFile(filePath)
+        }
     })
 
 
