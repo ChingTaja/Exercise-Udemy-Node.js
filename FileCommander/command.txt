@@ -1,1 +1,1 @@
-create a file other.txt
+ delete a file other.txt

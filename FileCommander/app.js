@@ -1,12 +1,17 @@
-const { watch, open } = require('node:fs/promises');
+const { watch, open, unlink } = require('node:fs/promises');
 const { Buffer } = require('buffer');
+const path = require('path');
 
 // 1. open (32)  將 file desciptor 讀進 memory
 // 2. read or write ...
 // 3. close (release memory)
 
 (async () => {
-    // create file (write)
+    const CREATE_FILE = 'create a file'
+    const DELETE_FILE = 'delete a file'
+    const RENAME_FILE = 'rename the file'
+    const ADD_TO_FILE = 'add to the file'
+
     const createFile = async (filePath) => {
 
         try {
@@ -24,6 +29,21 @@ const { Buffer } = require('buffer');
         }
     }
 
+    const deleteFile = async (filePath) => {
+        console.log(filePath)
+        let abPath = path.resolve(filePath)
+        console.log(`delete the ${abPath}`)
+        await unlink(abPath)
+    }
+
+    const renameFIle = (oldFile, newFile) => {
+        console.log(`rename the file ${oldFile} to ${newFile}`)
+    }
+
+    const addToFile = (filePath, content) => {
+        console.log(`add to the file ${filePath} this content ${content}`)
+    }
+
     let commandFileHandle = await open('./command.txt', 'r')
     commandFileHandle.on('change', async () => {
         // get file size
@@ -39,10 +59,39 @@ const { Buffer } = require('buffer');
         console.log(content)
 
         const command = buffer.toString('utf-8')
-        const CREATE_FILE = 'create a file'
+
+        // create:
+        // create a file <path>
         if (command.includes(CREATE_FILE)) {
             const filePath = command.substring(CREATE_FILE.length + 1)
             createFile(filePath)
+        }
+        // delete:
+        // delete a file <path>
+        if (command.includes(DELETE_FILE)) {
+            const filePath = command.substring(DELETE_FILE.length + 1 + 1)
+            console.log(DELETE_FILE.length + 1)
+            deleteFile(filePath)
+        }
+
+        // rename:
+        // rename the file <old> to <new>
+        if (command.includes(RENAME_FILE)) {
+            // " to " 起始位置
+            const _idx = command.indexOf(' to ')
+            const oldPath = command.substring(RENAME_FILE.length + 1, _idx)
+            const newPath = command.substring(_idx + ' to '.length)
+            renameFIle(oldPath, newPath)
+        }
+
+        // add to file:
+        // add to the file <path> this content:　<contnet>
+        if (command.includes(ADD_TO_FILE)) {
+            const _idx = command.indexOf(' this content:')
+            const filePath = command.substring(ADD_TO_FILE.length + 1, _idx)
+            const content = command.substring(_idx + ' this content: '.length)
+
+            addToFile(filePath, content)
         }
     })
 
