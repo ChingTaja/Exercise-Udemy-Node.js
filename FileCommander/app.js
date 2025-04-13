@@ -8,15 +8,7 @@ const { Buffer } = require('buffer');
 (async () => {
     let commandFileHandle = await open('./command.txt', 'r') // read
 
-    // 可放入檔案夾 (ex: ""./") OR 檔案
-    const watcher = watch('./command.txt') // return async iterator
-
-
-    for await (const event of watcher) {
-        if (event.eventType === 'change') {
-            // console.log('command.txt is changed!')
-        }
-
+    commandFileHandle.on('change', async () => {
         // get file size
         const size = (await commandFileHandle.stat()).size
 
@@ -27,7 +19,16 @@ const { Buffer } = require('buffer');
         let length = buffer.byteLength
         let position = 0
         const content = await commandFileHandle.read(buffer, offset, length, position)
-
         console.log(content)
+    })
+
+
+    // watcher (trigger)
+    // 可放入檔案夾 (ex: ""./") OR 檔案
+    const watcher = watch('./command.txt') // return async iterator
+    for await (const event of watcher) {
+        if (event.eventType === 'change') {
+            commandFileHandle.emit('change')
+        }
     }
 })()
