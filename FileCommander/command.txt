@@ -1,1 +1,1 @@
- delete a file other.txt
+add to the file nesw.txt this content: hi!!!

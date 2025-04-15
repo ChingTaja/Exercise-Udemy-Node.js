@@ -1,4 +1,4 @@
-const { watch, open, unlink } = require('node:fs/promises');
+const { watch, open, unlink, rename } = require('node:fs/promises');
 const { Buffer } = require('buffer');
 const path = require('path');
 
@@ -23,25 +23,55 @@ const path = require('path');
         } catch (e) {
             // promise 版本回傳　file handle
             let newFileHandler = await open(filePath, 'w') // create
-            newFileHandler.write('hello word') //write
 
             newFileHandler.close()
         }
     }
 
     const deleteFile = async (filePath) => {
-        console.log(filePath)
-        let abPath = path.resolve(filePath)
-        console.log(`delete the ${abPath}`)
-        await unlink(abPath)
+        try {
+
+            let abPath = path.resolve(filePath)
+            console.log(`delete the ${abPath}`)
+            await unlink(abPath)
+        } catch (e) {
+            console.log(e)
+            if (e.code === 'ENOENT') {
+                console.log('No file at this path to remove')
+            } else {
+                console.log('An error occurred while removing the file')
+            }
+        }
+
     }
 
-    const renameFIle = (oldFile, newFile) => {
-        console.log(`rename the file ${oldFile} to ${newFile}`)
+    const renameFIle = async (oldFile, newFile) => {
+        try {
+            console.log(`rename the file ${oldFile} to ${newFile}`)
+            await rename(oldFile, newFile)
+        } catch (e) {
+            console.log(e)
+            if (e.code === 'ENOENT') {
+                console.log(`No file at this path to rename, or the destination doesn't exist`)
+            } else {
+                console.log('An error occurred while renaming the file')
+            }
+        }
     }
 
-    const addToFile = (filePath, content) => {
-        console.log(`add to the file ${filePath} this content ${content}`)
+    let addedContent;
+    const addToFile = async (filePath, content) => {
+        if (addedContent === content) return
+        try {
+            console.log(`add to the file ${filePath} this content ${content}`)
+            let fileHandle = await open(filePath, 'w')
+
+            fileHandle.write(content)
+            addedContent = content
+        } catch (e) {
+            console.log(e)
+            console.log('An error occurred while add content the file')
+        }
     }
 
     let commandFileHandle = await open('./command.txt', 'r')
@@ -66,10 +96,11 @@ const path = require('path');
             const filePath = command.substring(CREATE_FILE.length + 1)
             createFile(filePath)
         }
+
         // delete:
         // delete a file <path>
         if (command.includes(DELETE_FILE)) {
-            const filePath = command.substring(DELETE_FILE.length + 1 + 1)
+            const filePath = command.substring(DELETE_FILE.length + 1)
             console.log(DELETE_FILE.length + 1)
             deleteFile(filePath)
         }
