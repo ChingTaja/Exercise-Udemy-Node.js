@@ -2,21 +2,21 @@
 const { Buffer } = require('buffer');
 
 // 第二個是初始化的值, 預設是 0, 可以不填
-const memoeryContainer = Buffer.alloc(4, 0); // "bytes"
+const memoryContainer = Buffer.alloc(4, 0); // "bytes"
 
-console.log(memoeryContainer); // 初始化塞 0
+console.log(memoryContainer); // 初始化塞 0
 // <Buffer 00 00 00 00> 用 "hex" 表示(convention)
 
 // 不建議, 下面作法是直接對 binary data 操作
-memoeryContainer[0]; // access 用 "decimal" 表示
-memoeryContainer[0] = 0xff; // write
-memoeryContainer[1] = 0x33;
-memoeryContainer[2] = 0x13;
-memoeryContainer[3] = 0xea;
+memoryContainer[0]; // access 用 "decimal" 表示
+memoryContainer[0] = 0xff; // write
+memoryContainer[1] = 0x33;
+memoryContainer[2] = 0x13;
+memoryContainer[3] = 0xea;
 
 //建議
-memoeryContainer.write(-34, 2); // access
-console.log(memoeryContainer.readInt8(2)); //write
+memoryContainer.write(-34, 2); // access
+console.log(memoryContainer.readInt8(2)); //write
 // 每個 bytes 最多存取 255個 value
 
 // 建立 buffer, 自動 alloc size
