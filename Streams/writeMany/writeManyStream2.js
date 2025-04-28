@@ -33,7 +33,7 @@ const { resolve } = require('node:path');
         const buffer = Buffer.alloc(16383, 10)
     
     
-        console.log(stream.writableHighWaterMark) // internal buffer max watermark 16384
+        console.log(stream.writableHighWaterMark) // Writable Stream - internal buffer max watermark 16384
         console.log(stream.writableLength) // internal buffer
         console.log(stream.write(buffer))
         console.log(stream.write(Buffer.alloc(1, "a")))
