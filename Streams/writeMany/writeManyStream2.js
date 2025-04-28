@@ -9,10 +9,24 @@ const { resolve } = require('node:path');
     let fileHandle = await open('./text.txt', 'w')
     const stream = fileHandle.createWriteStream()
 
+    // resume loop when internal buffer is empty
+    stream.on('drain', () => {
+        console.log('Internal Buffer 之前滿了又被清空了, 可以放東西進來了')
+        writeMany()
+    })
+
+    stream.on('finish', () => {
+        fileHandle.close()
+        console.timeEnd('write many')
+    })
+
+    stream.on('close', () => {
+        console.log('底層資源被釋放了')
+    })
 
     console.time('write many')
     let i = 0
-    const writeMany = async () => {
+    const writeMany = () => {
 
 
         /* 避免讓 writableLength 大於 writableHighWaterMark!!!
@@ -44,18 +58,8 @@ const { resolve } = require('node:path');
             // if internal buffer is full, stop the loop
             if (!isFilled) break
         }
-
-        writeMany() // 寫在事件 finish 後會報錯 write after end
-
-        // resume loop when internal buffer is empty
-        stream.on('drain', () => {
-            console.log('Internal Buffer 之前滿了又被清空了, 可以放東西進來了')
-            writeMany()
-        })
-
-        stream.on('finish', () => {
-            fileHandle.close()
-            console.timeEnd('write many')
-        })
     }
+
+
+    writeMany()
 })()
