@@ -44,9 +44,9 @@ const { resolve } = require('node:path');
         })
     
         */
-        while (i < 10000) {
-            const buffer = Buffer.from(`${i} `, 'utf-8')
-            if (i === 9999) {
+        while (i < 100000) {
+            const buffer = Buffer.from(` ${i} `, 'utf-8')
+            if (i === 99999) {
                 return stream.end(buffer)
                 // stream.end 後面再 stream.write 會報錯
             }
