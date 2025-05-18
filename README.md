@@ -1,8 +1,10 @@
 #### Learning Map
 
 1. Buffer
-2. File System
-3. Stream
+2. EventEmitter
+3. File System
+4. Stream
     - writable stream
     - readable stream
-4. pipe
+5. pipe / pipeline
+6. custom writable stream
